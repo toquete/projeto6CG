@@ -1,69 +1,89 @@
+/*********************************************************************
+ * Projeto 6 - CG - Curvas de Bézier
+ *
+ * César Yugo Okada e Guilherme Toquete
+ *
+ * Algoritmo que gera uma curva de Bézier com 4 pontos fixos.
+ *
+ *              COMANDOS
+ * Botão direito do mouse descola o ponto de controle direito
+ * Botão esquerdo do mouse desloca o ponto de controle esquerdo
+ *
+ * ********************************************************************/
+
 #include <stdio.h>
 #include <math.h>
 #include <GL/glut.h>
 
-#define LARGURA 500
-#define ALTURA 500
+#define HEIGHT 500
+#define WIDTH 500
 
-float p[4][2];
-int indice;
 
-// Função callback chamada para gerenciar eventos do mouse
-void Inicia()
+float points[4][2];
+int idx;
+
+void init()
 {
 
-   p[0][0] = -1.0f;
-   p[0][1] =  0.0f;
+   points[0][0] = -1.0;
+   points[0][1] =  0.0;
 
-   p[1][0] = -0.5f;
-   p[1][1] = -0.5f;
+   points[1][0] = -0.5;
+   points[1][1] = -0.5;
 
-   p[2][0] =  0.5f;
-   p[2][1] =  0.5f;
+   points[2][0] =  0.5;
+   points[2][1] =  0.5;
 
-   p[3][0] =  1.0f;
-   p[3][1] =  0.0f;
+   points[3][0] =  1.0;
+   points[3][1] =  0.0;
 }
 
-void atualiza(int x, int y)
+void atualizaPoints(int x, int y)
 {
    float cx, cy;
 
-   cx = ((float)(2.0f*x)/(float)LARGURA)    - 1.0f;
-   cy = ((float)(2.0f*y)/(float)ALTURA)    - 1.0f;
-   cy *= -1.0f;
+   cx = ((float)(2*x)/(float)WIDTH) - 1;
+   cy = ((float)(2*y)/(float)HEIGHT) - 1;
+   cy *= -1;
 
-   p[indice][0] = cx;
-   p[indice][1] = cy;
+   points[idx][0] = cx;
+   points[idx][1] = cy;
    glutPostRedisplay();
 }
 
-void escolha(int botao, int estado, int x, int y)
+
+//função detecta os eventos do mouse
+void keyBoard(int botao, int estado, int x, int y)
 {
    if ((botao == GLUT_LEFT_BUTTON) && (estado == GLUT_DOWN))
-      indice = 1;
+      idx = 1;
 
    if ((botao == GLUT_RIGHT_BUTTON) && (estado == GLUT_DOWN))
-      indice = 2;
+      idx = 2;
 
-   atualiza(x,y);
+   atualizaPoints(x,y);
 }
 
-void captura(int x, int y)
+void callBack(int x, int y)
 {
-   atualiza(x,y);
+   atualizaPoints(x,y);
 }
 
 float fatorial(int a)
 {
    int i;
-   float produto;
+   float result;
 
-   produto = 1.0f;
-   for (i=a;i>0;i--)
-      produto *= (float) i;
-   return produto;
+   result = 1.0;
+   for (i = a; i > 0; i--)
+      result *= (float) i;
+   return result;
 }
+
+/*
+ * float combinacao(int a, int b) e float fatorial(int a)
+ * efetua o calculo da combinação para a função polinomial de Berntein
+ */
 
 float combinacao(int a, int b)
 {
@@ -71,29 +91,29 @@ float combinacao(int a, int b)
 }
 
 
-void exibe(void)
+void display()
 {
    GLint i;
    GLfloat u,x,y;
 
    glClear(GL_COLOR_BUFFER_BIT);
 
-   glColor3f(1.0f,0.0f,0.0f);
+   glColor3f(1.0,0.0,0.0);
    glBegin(GL_LINE_STRIP);
    for (i=0;i<4;i++)
-      glVertex2f(p[i][0],p[i][1]);
+      glVertex2f(points[i][0],points[i][1]);
    glEnd();
 
-   glColor3f(0.0f,1.0f,0.0f);
+   glColor3f(0.0,1.0,0.0);
    glBegin(GL_POINTS);
-   for (u=0.0f;u<=1.0f;u+=0.001f)
+   for (u=0.0;u<=1.0;u+=0.001)
    {
-      x = 0.0f;
-      y = 0.0f;
+      x = 0.0;
+      y = 0.0;
       for (i=0;i<4;i++)
       {
-         x += combinacao(i,3)*pow(u,i)*pow(1.0f-u,3-i)*p[i][0];
-         y += combinacao(i,3)*pow(u,i)*pow(1.0f-u,3-i)*p[i][1];
+         x += combinacao(i,3)*pow(u,i)*pow(1.0f-u,3-i)*points[i][0];
+         y += combinacao(i,3)*pow(u,i)*pow(1.0f-u,3-i)*points[i][1];
       }
       glVertex2f(x,y);
    }
@@ -105,15 +125,15 @@ void exibe(void)
 
 int main(int argc, char** argv)
 {
-   Inicia();
+   init();
    glutInit(&argc,argv);
    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-   glutInitWindowSize(ALTURA,LARGURA);
-   glutInitWindowPosition(20,20);
-   glutCreateWindow("Desenhando uma curva de Bézier");
-   glutDisplayFunc(exibe);
-   glutMouseFunc(escolha);
-   glutMotionFunc(captura);
+   glutInitWindowSize(500,500);
+   glutInitWindowPosition(50,50);
+   glutCreateWindow("Curva de Bézier");
+   glutDisplayFunc(display); //pinta os pontos
+   glutMouseFunc(keyBoard); //captura os eventos do mouse
+   glutMotionFunc(callBack); //atualiza a janela de desenho
    glutMainLoop();
 
    return 0;
