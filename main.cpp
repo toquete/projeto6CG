@@ -42,8 +42,8 @@ void atualizaPoints(int x, int y)
 {
    float cx, cy;
 
-   cx = ((float)(2*x)/(float)WIDTH) - 1;
-   cy = ((float)(2*y)/(float)HEIGHT) - 1;
+   cx = ((float)(2 * x) / (float)WIDTH) - 1;
+   cy = ((float)(2 * y) / (float)HEIGHT) - 1;
    cy *= -1;
 
    points[idx][0] = cx;
@@ -61,12 +61,12 @@ void keyBoard(int botao, int estado, int x, int y)
    if ((botao == GLUT_RIGHT_BUTTON) && (estado == GLUT_DOWN))
       idx = 2;
 
-   atualizaPoints(x,y);
+   atualizaPoints(x, y);
 }
 
 void callBack(int x, int y)
 {
-   atualizaPoints(x,y);
+   atualizaPoints(x, y);
 }
 
 float fatorial(int a)
@@ -87,39 +87,49 @@ float fatorial(int a)
 
 float combinacao(int a, int b)
 {
-   return fatorial(b)/(fatorial(a)*fatorial(b-a));
+   return fatorial(b) / (fatorial(a) * fatorial(b - a));
 }
 
 
 void display()
 {
-   GLint i;
-   GLfloat u,x,y;
+   int i;
+   float u,x,y;
 
    glClear(GL_COLOR_BUFFER_BIT);
 
-   glColor3f(1.0,0.0,0.0);
+   glColor3f(1.0, 0.0, 0.0);
    glBegin(GL_LINE_STRIP);
-   for (i=0;i<4;i++)
-      glVertex2f(points[i][0],points[i][1]);
+   for (i = 0; i < 4; i++)
+      glVertex2f(points[i][0], points[i][1]);
    glEnd();
 
-   glColor3f(0.0,1.0,0.0);
+   glColor3f(0.0, 0.0, 0.0);
    glBegin(GL_POINTS);
-   for (u=0.0;u<=1.0;u+=0.001)
+   for (u = 0.0; u <= 1.0;u += 0.001)
    {
       x = 0.0;
       y = 0.0;
-      for (i=0;i<4;i++)
+      for (i = 0; i < 4; i++)
       {
-         x += combinacao(i,3)*pow(u,i)*pow(1.0f-u,3-i)*points[i][0];
-         y += combinacao(i,3)*pow(u,i)*pow(1.0f-u,3-i)*points[i][1];
+         x += combinacao(i, 3) * pow(u, i) * pow(1.0f - u, 3 - i) * points[i][0];
+         y += combinacao(i, 3) * pow(u, i) * pow(1.0f - u, 3 - i) * points[i][1];
       }
-      glVertex2f(x,y);
+      glVertex2f(x, y);
    }
    glEnd();
 
    glFlush();
+}
+
+void inicializaOpenGL()
+{
+   glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB); //Define o modo inicial de apresentação
+   glutInitWindowPosition(500,100); // Define a posição inicial da tela a ser apresentada
+   glutInitWindowSize(WIDTH, HEIGHT); // Define o tamanho da tela a ser apresentada
+   glutCreateWindow("Curva de Bézier");
+   glClearColor(1.0,1.0,1.0,0);// define a cor de fundo da janela (no caso, branco)
+   glPointSize(2.0);
 }
 
 
@@ -127,10 +137,7 @@ int main(int argc, char** argv)
 {
    init();
    glutInit(&argc,argv);
-   glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-   glutInitWindowSize(500,500);
-   glutInitWindowPosition(50,50);
-   glutCreateWindow("Curva de Bézier");
+   inicializaOpenGL();
    glutDisplayFunc(display); //pinta os pontos
    glutMouseFunc(keyBoard); //captura os eventos do mouse
    glutMotionFunc(callBack); //atualiza a janela de desenho
