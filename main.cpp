@@ -25,17 +25,17 @@ int idx;
 void init()
 {
 
-   points[0][0] = -1.0;
-   points[0][1] =  0.0;
+   points[0][0] = -1.2;
+   points[0][1] = 0;
 
    points[1][0] = -0.5;
-   points[1][1] = -0.5;
+   points[1][1] = 0.5;
 
    points[2][0] =  0.5;
    points[2][1] =  0.5;
 
-   points[3][0] =  1.0;
-   points[3][1] =  0.0;
+   points[3][0] =  1.2;
+   points[3][1] =  0;
 }
 
 void atualizaPoints(int x, int y)
